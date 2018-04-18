@@ -10,8 +10,14 @@ http.createServer(function (req, res) {
     // Using switch for Path
        switch(path) {
       
-        case'':
-          fs.readFile(res,'ITC230-AdvJS/home.html', 'text/html');
+        case'/':
+
+          fs.readFile('home.html', function (err, data) {
+                if (err) return console.error(err);
+                 res.writeHead(200, {'Content-Type': 'text/html'});
+                 res.end(data);
+                 console.log(data.toString());
+            });
           break;
     
         case'/about':
@@ -19,6 +25,19 @@ http.createServer(function (req, res) {
            res.writeHead(200, {'Content-Type': 'text/plain'});
            res.end('About Page');
            break;
+           
+        case'/get':
+          fs.readFile(res,'ITC230/about.html',' text/html');
+           res.writeHead(200, {'Content-Type': 'text/plain'});
+           res.end('results');
+           break;
+           
+        case'/delete':
+          fs.readFile(res,'ITC230/about.html',' text/html');
+           res.writeHead(200, {'Content-Type': 'text/plain'});
+           res.end('delete');
+           break;   
+           
        default:
            res.writeHead(404, {'Content-Type': 'text/plain'});
            res.end('404:Page not found.');
