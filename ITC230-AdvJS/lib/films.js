@@ -2,7 +2,7 @@
 
 // array of objects
 //let  declares variables in this scope block
-let docFilms = [
+let films = [
     {title:"The September Issue", director:"R.J. Cuttler", releaseDate:"2009"},
     {title:"The First Monday in May", director:"Andrew Rossi", releaseDate:"2016"},
     {title:"Dries", director:"Reiner Holzemer", releaseDate:"2017"},
@@ -15,3 +15,41 @@ let docFilms = [
     {title:"A Man's Story", director:"Varon Bonicos", releaseDate:"2010"}
     
     ];
+    
+  
+  
+    
+    exports.getAllFilms = function() {
+        
+        return films;
+        
+    };
+    
+    
+   exports.findTitle = (title) => {
+     return films.find((item) => {
+      
+
+         return item.title == title; 
+     });  
+   };
+
+//Delete an item from the array
+exports.delete = (title) => {
+    const originalCount = films.length;
+    films = films.filter((item) =>{
+        
+        
+        return item.title.toLowerCase()!= title;    
+        
+    });
+    
+    //boolean to show item was deleted
+    return films.length != originalCount;
+    
+    
+    
+
+};
+
+   

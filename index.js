@@ -1,6 +1,6 @@
 var http = require('http');
 var fs = require("fs");
-
+var films = require('./ITC230-AdvJS/lib/films');
 
 
 http.createServer(function (req, res) {
@@ -21,21 +21,30 @@ http.createServer(function (req, res) {
           break;
     
         case'/about':
-          fs.readFile(res,'ITC230/about.html',' text/html');
+      
            res.writeHead(200, {'Content-Type': 'text/plain'});
            res.end('About Page');
            break;
            
-        case'/get':
-          fs.readFile(res,'ITC230/about.html',' text/html');
+        //all lower case because var path wont find camelcase   
+        case'/getall':
+         
            res.writeHead(200, {'Content-Type': 'text/plain'});
+           res.write(JSON.stringify(films.getAllFilms()));
            res.end('results');
            break;
            
-        case'/delete':
-          fs.readFile(res,'ITC230/about.html',' text/html');
+         case'/get':
+          
            res.writeHead(200, {'Content-Type': 'text/plain'});
-           res.end('delete');
+           res.write(JSON.stringify(films.findTitle('Iris')));
+          
+           break;   
+          
+        case'/delete':
+           res.writeHead(200, {'Content-Type': 'text/plain'});
+           res.write(JSON.stringify(films.delete('Iris')));
+           res.end('Item deleted');
            break;   
            
        default:
@@ -45,7 +54,7 @@ http.createServer(function (req, res) {
   }
 
 
-}).listen(process.env.PORT, process.env.IP);
+}).listen(process.env.PORT || 3000);
 //console.log('Server running at http://127.0.0.1:8081/');
 
 
