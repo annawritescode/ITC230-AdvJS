@@ -1,62 +1,80 @@
-var http = require('http');
-var fs = require("fs");
-var films = require('./ITC230-AdvJS/lib/films');
+'use strict';
+const express = require("express");
+const app = express();
+var films = require('./lib/films');
+
+app.set('port', process.env.PORT || 3000);
+app.use(express.static(__dirname + '/public')); // set location for static files
+app.use(require("body-parser").urlencoded({extended: true})); // parse form submissions
 
 
-http.createServer(function (req, res) {
-    //changes url to lower
-    var path = req.url.toLowerCase();
+let handlebars =  require("express-handlebars");
+app.engine(".html", handlebars({extname: '.html'}));
+app.set("view engine", ".html");
+
+
+
+ {
+  
+  // send content of 'home' view
+app.get('/', (req,res) => {
+ res.render('home');
+});
+
+  
+// // send static file as response
+// app.get('/', (req, res) => {
+//  res.type('text/html');
+//  res.sendFile(__dirname + '/home.html'); 
+// });
+
+// send plain text response
+app.get('/about', (req, res) => {
+ res.type('text/plain');
+ res.send('About page');
+});
+
+
+// send plain text response
+app.get('/getall', (req, res) => {
+ res.type('text/plain');
+ 
+});
+// send content of 'home' view
+app.get('/get', (req,res) => {
+ let result = films.findTitle(req.query.title);
+ res.render('details', {title: req.query.title, result: result });
+});
+
+app.post('/get', (req,res) => {
+ let result = films.findTitle(req.body.title);
+ res.render('details', {title: req.body.title, result: result });
+});
+
+// send plain text response
+app.get('/delete', (req, res) => {
+ res.type('text/plain');
+ 
+});
+
+
+
+// define 404 handler
+app.use( (req,res) => {
+ res.type('text/plain'); 
+ res.status(404);
+ res.send('404 - Not found');
+});
     
-    // Using switch for Path
-       switch(path) {
-      
-        case'/':
 
-          fs.readFile('home.html', function (err, data) {
-                if (err) return console.error(err);
-                 res.writeHead(200, {'Content-Type': 'text/html'});
-                 res.end(data);
-                 console.log(data.toString());
-            });
-          break;
-    
-        case'/about':
-      
-           res.writeHead(200, {'Content-Type': 'text/plain'});
-           res.end('About Page');
-           break;
-           
-        //all lower case because var path wont find camelcase   
-        case'/getall':
-         
-           res.writeHead(200, {'Content-Type': 'text/plain'});
-           res.write(JSON.stringify(films.getAllFilms()));
-           res.end('results');
-           break;
-           
-         case'/get':
-          
-           res.writeHead(200, {'Content-Type': 'text/plain'});
-           res.write(JSON.stringify(films.findTitle('Iris')));
-          
-           break;   
-          
-        case'/delete':
-           res.writeHead(200, {'Content-Type': 'text/plain'});
-           res.write(JSON.stringify(films.delete('Iris')));
-           res.end('Item deleted');
-           break;   
-           
-       default:
-           res.writeHead(404, {'Content-Type': 'text/plain'});
-           res.end('404:Page not found.');
-           break;
-  }
+  
+ 
 
+}
 
-}).listen(process.env.PORT || 3000);
-//console.log('Server running at http://127.0.0.1:8081/');
-
+app.listen(app.get('port'), () => {
+ console.log('Express started'); 
+});
 
 
 

@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/annawritescode/ITC230-AdvJS/issues"
   },
-  "homepage": "https://github.com/annawritescode/ITC230-AdvJS#readme"
+  "homepage": "https://github.com/annawritescode/ITC230-AdvJS#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "express-handlebars": "^3.0.0",
+    "save": "^2.3.2"
+  }
 }

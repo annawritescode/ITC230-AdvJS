@@ -1,0 +1,13 @@
+
+<html>
+<body>
+  <h2>Details for {{title}}</h2>
+  {{#if result}}
+    <li>Title: {{ result.title }}
+    <li>Director: {{ result.director }}
+    <li>Release Date: {{ result.releaseDate }}
+  {{else}}
+    not found
+  {{/if}}
+</body>
+</html> 
