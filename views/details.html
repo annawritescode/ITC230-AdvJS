@@ -1,4 +1,3 @@
-
 <html>
 <body>
   <h2>Details for {{title}}</h2>
@@ -6,6 +5,10 @@
     <li>Title: {{ result.title }}
     <li>Director: {{ result.director }}
     <li>Release Date: {{ result.releaseDate }}
+    
+    
+     <input type="button" onclick="location.href='delete?title={{title}}';" value="Delete" />
+
   {{else}}
     not found
   {{/if}}

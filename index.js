@@ -46,16 +46,24 @@ app.get('/get', (req,res) => {
  res.render('details', {title: req.query.title, result: result });
 });
 
+//post result
 app.post('/get', (req,res) => {
  let result = films.findTitle(req.body.title);
  res.render('details', {title: req.body.title, result: result });
 });
 
-// send plain text response
-app.get('/delete', (req, res) => {
- res.type('text/plain');
+// 
+// delete item
+app.get('/delete', (req,res) => {
+ let result = films.delete(req.query.title);
+ res.render('delete', {title: req.query.title, result: result });
+ 
+ console.log(result);
+  
+    res.render('delete', { title: req.query.title, result: result });
  
 });
+
 
 
 
