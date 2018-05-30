@@ -94,11 +94,13 @@ Film.remove({title:req.params.title.toLowerCase()}, (err, title) => {
 });
 
 
-app.post('/api/add/:title/:director/:releaseDate', (req, res,next) => {
-    let title= req.params.title;
-    Film.update({title:title},{title:title,director: req.params.director, releaseDate:req.params.releaseDate},{upsert:true },(err,result)=>{
+app.get('/api/film/add/:title/:director/:releaseDate', (req, res) => {
+    let obj={ title:req.params.title, director:req.params.director,releaseDate:req.params.releaseDate};
+   // console.log(req.params.title);
+    Film.update(obj,(err,film)=>{
      if(err) return(err);
-     res.json({updated: result.nModified});
+     
+     res.json(film);
     });
 });
     
