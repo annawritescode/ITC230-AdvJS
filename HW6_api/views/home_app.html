@@ -2,36 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Untitled Document</title>
+<title>Documentaries </title>
 <link href="css/style.css" type="text/css" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
     
-    
-<!--Remy Sharp Shim --> 
-<!--[if lte IE 9]> 
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js" >
-</script> 
-<![endif]-->
+  <style type="text/css">
+  .flex-container {
+      display: -webkit-flex;
+      display: flex;
+      width: 600px;
+      background-color: lightgrey;
+  }
+  #item-list {
+      background-color: lightgrey;
+      width: 30%;
+      padding: 0px 10px 0px 0px;
+  }
+  #item-details {
+      background-color: yellow;
+      width: 75%;
+      padding: 10px;
+  }
+</style>
+
 </head>
 
 <body>
-<div id="wrapper">
+
 <header></header>
-<div id="root"/>
+<div id="root"></div>
 <script type="text/babel">
+
+
+const greeting = <h1>Hello, world</h1>; 
+ // UI elements
+    
+    const Title = ({title}) => {
+      // simple component w/ single property
+      return <div><h2>{title}</h2></div>;
+    }
+    
+    const ItemList = ({items, filter, show}) => {
+      // generate array of item nodes
+      const itemNodes = items.map((item) => {
+          return <li id={item._id} key={item._id} onClick={show}>{item.title}</li>
+      });
+      return <ul>{itemNodes}</ul>;
+    }
+ 
+    
+   
 
 class MyApp extends React.Component {  
   constructor(props) {  
     super(props);  
-    this.state = {date: new Date()}; 
-  } 
+    this.state = {
+       items: {{{films}}},
+       currentItem:{}//current selected item
+    };
+    
+   // bind App context to functions used by child components
+    // this.onSearchChange = this.onSearchChange.bind(this);
+    // this.onChange = this.onChange.bind(this);
+    // this.onSave = this.onSave.bind(this);
+    // this.onDelete = this.onDelete.bind(this);
+    // this.onClear = this.onClear.bind(this);
+   
+  } // end constructor
+  
+
+            
   render() { 
-    return ( <div> <h1>Hello, world!</h1>    </div> ); 
-  } 
+    return (
+      <div>
+      <Title title ="Documentary list"/>
+      <div className="flex-container">
+      <ItemList 
+      items={this.state.items}
+      />
+    
+
+      </div>
+      </div>
+       ); 
+       
+      
+  } //end render
 } //end MyApp class
+
+ 
 
 ReactDOM.render(  <MyApp />,  document.getElementById('root') );
 
@@ -39,15 +101,15 @@ ReactDOM.render(  <MyApp />,  document.getElementById('root') );
 
 
 
-  const greeting = <h1>Hello, world</h1>; 
-  ReactDOM.render( greeting, document.getElementById('root') );
+  
+
 </script>
  
-// <h1>Bon jour, world!</h1>
+
  
 
      
  
-</div>
+
 </body>
 </html>

@@ -18,10 +18,10 @@ app.set("view engine", ".html");
   
   // send content of 'home' view
 app.get('/', (req,res,next) => {
- Film.find((err,filmSchema)=>{
+ Film.find((err,films)=>{
   console.log();
   if(err) return next(err);
-  res.render('home_app',{Film:JSON.stringify(Film)});
+  res.render('home_app',{films:JSON.stringify(films)});
  });
  
 
