@@ -16,6 +16,12 @@
       width: 600px;
       background-color: lightgrey;
   }
+   .title{
+    margin: 0 auto;
+    text-align: center;
+    width: 600px;
+    font-size: 2em;
+  }
   #item-list {
       background-color: lightgrey;
       width: 30%;
@@ -37,23 +43,8 @@
 <script type="text/babel">
 
 
-const greeting = <h1>Hello, world</h1>; 
- // UI elements
-    
-    const Title = ({title}) => {
-      // simple component w/ single property
-      return <div><h2>{title}</h2></div>;
-    }
-    
-    const ItemList = ({items, filter, show}) => {
-      // generate array of item nodes
-      const itemNodes = items.map((item) => {
-          return <li id={item._id} key={item._id} onClick={show}>{item.title}</li>
-      });
-      return <ul>{itemNodes}</ul>;
-    }
+//const greeting = <h1>Hello, world</h1>; 
  
-    
    
 
 class MyApp extends React.Component {  
@@ -72,18 +63,28 @@ class MyApp extends React.Component {
     // this.onClear = this.onClear.bind(this);
    
   } // end constructor
-  
+  // show item details when list item clicked
+      showDetails(event){
+        // event.target is item clicked. Assumes each item has an id attribute
+        let editItem = this.state.items.find((item) => {
+          return item._id == event.target.id;
+        });
+        this.setState({currentItem: editItem});
+      }//end show details event
 
             
   render() { 
     return (
       <div>
+  <div className="title">
       <Title title ="Documentary list"/>
+      </div>
       <div className="flex-container">
       <ItemList 
       items={this.state.items}
+      show={this.showDetails.bind(this)}
       />
-    
+      <ItemDetails item={this.state.currentItem}/>
 
       </div>
       </div>
@@ -93,11 +94,54 @@ class MyApp extends React.Component {
   } //end render
 } //end MyApp class
 
+ // UI elements
+    
+    const Title = ({title}) => {
+      // simple component w/ single property
+      return (
+        <div><h2>{title}</h2></div>
+        );
+    }
+    
+    const ItemList = ({items, filter, show}) => {
+      // generate array of item nodes
+       const itemNodes = items.map((item) => {
+        if (!filter || item.title.toLowerCase().includes(filter)) { 
+          return <li id={item._id} key={item._id} onClick={show}>{item.title}</li>
+        }
+      });
+      
+      return<span id="item-list">
+      <h3>Documentary list</h3>
+     <ul>{itemNodes}</ul>;
+     </span>
+    }
  
+       const ItemDetails = (props) => {
+        return (
+          <span id="item-details">
+            <h3>Details:</h3>
+            <form onChange={props.change}>
+              <input type="text" name="title" placeholder="Title" value={props.item.title || ""} /><p/>
+              <input type="text" name="director" placeholder="director" value={props.item.director || ""} /><p/>
+              <input type="date" name="releaseDate" placeholder="releaseDate" value={getISOstring(props.item.releaseDate)} />
+              <p/>
+            </form>
+           <button onClick={props.save}>Save</button>  <button onClick={props.reset}>Reset</button> <button onClick={props.delete}>Delete</button>
+          </span>
+        );
+    } 
 
 ReactDOM.render(  <MyApp />,  document.getElementById('root') );
 
-
+// convert date value to yyyy-mm-dd expected by HTML5 date field
+  function getISOstring(dateString) {
+    let date = (dateString) ? new Date(dateString) : new Date();
+    let month = (date.getMonth() >=9) ? date.getMonth()+1 : "0" + (date.getMonth()+1);
+    let day = (date.getDate() >=10) ? date.getDate() : "0" + date.getDate();
+    return date.getFullYear() + "-" + month + "-" + day;    
+  }
+  
 
 
 
