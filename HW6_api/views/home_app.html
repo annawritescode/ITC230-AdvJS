@@ -60,7 +60,7 @@ class MyApp extends React.Component {
     };
     
   // bind App context to functions used by child components
-      // this.onSearchChange = this.onSearchChange.bind(this);
+      this.onSearchChange = this.onSearchChange.bind(this);
       this.onChange = this.onChange.bind(this);
       this.onSave = this.onSave.bind(this);
       this.onDelete = this.onDelete.bind(this);
@@ -91,7 +91,7 @@ class MyApp extends React.Component {
       
         // handle detail changes
       onChange(event) {
-        const newItem = this.state.currentItem;
+        var newItem = this.state.currentItem;
         newItem[event.target.name] = event.target.value
         this.setState({currentItem: newItem});
       }//end onChange
@@ -122,12 +122,12 @@ class MyApp extends React.Component {
               }
               return item;
             });          
-          }
+          }//close else
   
           // Update state with new array
           this.setState({items: newData});
         });
-      }
+      }//close onSave
 // Handle item delete
       onDelete(){
         let id = this.state.currentItem._id;
@@ -203,8 +203,8 @@ class MyApp extends React.Component {
       
       return<span id="item-list">
       <h3>Documentary list</h3>
-     <ul>{itemNodes}</ul>;
-     </span>
+     <ul>{itemNodes}</ul>
+     </span>;
     }//end itemList
  
        const ItemDetails = (props) => {
@@ -220,7 +220,7 @@ class MyApp extends React.Component {
            <button onClick={props.save}>Save</button>  <button onClick={props.reset}>Reset</button> <button onClick={props.delete}>Delete</button>
           </span>
         );
-    } 
+    }//close ItemDetails 
 
 ReactDOM.render(  <MyApp />,  document.getElementById('root') );
 
