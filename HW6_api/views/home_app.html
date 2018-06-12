@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Documentaries </title>
-<link href="css/style.css" type="text/css" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
@@ -14,7 +13,8 @@
       display: -webkit-flex;
       display: flex;
       width: 600px;
-      background-color: lightgrey;
+      background-color: white;
+      
   }
    .title{
     margin: 0 auto;
@@ -24,13 +24,16 @@
   }
   #item-list {
       background-color: lightgrey;
-      width: 30%;
-      padding: 0px 10px 0px 0px;
+      width: 40%;
+      padding: 0px 10px 0px 10px;
+      border:solid black 1px;
   }
   #item-details {
       background-color: yellow;
-      width: 75%;
-      padding: 10px;
+      width: 50%;
+      padding: 0px 10px 0px 30px;
+      /*padding: 10px;*/
+      border:solid black 1px;
   }
 </style>
 
@@ -46,23 +49,32 @@
 //const greeting = <h1>Hello, world</h1>; 
  
    
-
+//parent
 class MyApp extends React.Component {  
   constructor(props) {  
     super(props);  
     this.state = {
-       items: {{{films}}},
-       currentItem:{}//current selected item
+      items: {{{films}}},
+      filter: "", // search term 
+      currentItem:{}//current selected item
     };
     
-   // bind App context to functions used by child components
-    // this.onSearchChange = this.onSearchChange.bind(this);
-    // this.onChange = this.onChange.bind(this);
-    // this.onSave = this.onSave.bind(this);
-    // this.onDelete = this.onDelete.bind(this);
-    // this.onClear = this.onClear.bind(this);
+  // bind App context to functions used by child components
+      // this.onSearchChange = this.onSearchChange.bind(this);
+      this.onChange = this.onChange.bind(this);
+      this.onSave = this.onSave.bind(this);
+      this.onDelete = this.onDelete.bind(this);
+      this.onClear = this.onClear.bind(this);
+  
    
   } // end constructor
+  
+   // handle changes to search form
+      onSearchChange(event) {
+        // set search term. react will handle component updates 
+        this.setState({filter: event.target.value.toLowerCase() });
+      }//end onSearchChange
+      
   // show item details when list item clicked
       showDetails(event){
         // event.target is item clicked. Assumes each item has an id attribute
@@ -71,22 +83,88 @@ class MyApp extends React.Component {
         });
         this.setState({currentItem: editItem});
       }//end show details event
+      
+        // clear details form
+      onClear() {
+        this.setState({currentItem: {}});
+      }//end clear
+      
+        // handle detail changes
+      onChange(event) {
+        const newItem = this.state.currentItem;
+        newItem[event.target.name] = event.target.value
+        this.setState({currentItem: newItem});
+      }//end onChange
+      
+      // Handle item save
+      onSave() {
+        let newItem = this.state.currentItem;
+        if (!newItem.title) {
+          return;
+        }
+
+      fetch("/api/film/add", {
+          method: "POST",
+        	headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newItem)
+        }).then(res => res.json())
+        	.then((json) => {
+        	  
+          let newData;
+          if (!newItem._id) { // add new item to array
+            newData = this.state.items;
+            newItem._id = json._id;
+            newData.push(newItem);
+          } else { // update existing item 
+            newData = this.state.items.map((item) => {
+              if (item._id === newItem._id) {
+                item = newItem; 
+              }
+              return item;
+            });          
+          }
+  
+          // Update state with new array
+          this.setState({items: newData});
+        });
+      }
+// Handle item delete
+      onDelete(){
+        let id = this.state.currentItem._id;
+        console.log(id)
+       
+        fetch("/api/delete/" + id).then((response) => {
+          return response.json();
+        }).then((results) => {
+          // Filter all items except the one to be removed
+          const remainder = this.state.items.filter((item) => {
+            return item._id !== id;
+          
+          });
+          // Update state with new array
+            this.setState({items: remainder, currentItem: {}});
+
+        });
+
+}//end onDelete
+
 
             
   render() { 
     return (
       <div>
-  <div className="title">
-      <Title title ="Documentary list"/>
-      </div>
+        <div className="title">
+          <Title title ="Documentary list"/>
+          <SearchForm filter = {this.state.filter} change={this.onSearchChange}/>
+         </div>
       <div className="flex-container">
       <ItemList 
       items={this.state.items}
       show={this.showDetails.bind(this)}
       />
-      <ItemDetails item={this.state.currentItem}/>
+      <ItemDetails item={this.state.currentItem} change={this.onChange} save={this.onSave} reset={this.onClear} delete ={this.onDelete}/>
 
-      </div>
+        </div>
       </div>
        ); 
        
@@ -101,21 +179,33 @@ class MyApp extends React.Component {
       return (
         <div><h2>{title}</h2></div>
         );
-    }
+    }//end Title
+    
+        const SearchForm = (props) => {
+        return (
+          <div>
+            <input
+              type="text" placeholder="Enter a search term"
+              value={props.filter}
+              onChange={props.change}
+            /><p/>
+          </div>
+        );
+    }//end SearchForm
     
     const ItemList = ({items, filter, show}) => {
       // generate array of item nodes
        const itemNodes = items.map((item) => {
         if (!filter || item.title.toLowerCase().includes(filter)) { 
           return <li id={item._id} key={item._id} onClick={show}>{item.title}</li>
-        }
-      });
+        }//end if
+      });//end itemNodes
       
       return<span id="item-list">
       <h3>Documentary list</h3>
      <ul>{itemNodes}</ul>;
      </span>
-    }
+    }//end itemList
  
        const ItemDetails = (props) => {
         return (
@@ -124,7 +214,7 @@ class MyApp extends React.Component {
             <form onChange={props.change}>
               <input type="text" name="title" placeholder="Title" value={props.item.title || ""} /><p/>
               <input type="text" name="director" placeholder="director" value={props.item.director || ""} /><p/>
-              <input type="date" name="releaseDate" placeholder="releaseDate" value={getISOstring(props.item.releaseDate)} />
+              <input type="date" name="releaseDate" placeholder="releaseDate" value={getISOstring(props.item.releaseDate) || ""} />
               <p/>
             </form>
            <button onClick={props.save}>Save</button>  <button onClick={props.reset}>Reset</button> <button onClick={props.delete}>Delete</button>
@@ -135,25 +225,15 @@ class MyApp extends React.Component {
 ReactDOM.render(  <MyApp />,  document.getElementById('root') );
 
 // convert date value to yyyy-mm-dd expected by HTML5 date field
+//makes date pretty
   function getISOstring(dateString) {
     let date = (dateString) ? new Date(dateString) : new Date();
     let month = (date.getMonth() >=9) ? date.getMonth()+1 : "0" + (date.getMonth()+1);
     let day = (date.getDate() >=10) ? date.getDate() : "0" + date.getDate();
-    return date.getFullYear() + "-" + month + "-" + day;    
+     return date.getFullYear() + "-" + month + "-" + day; 
   }
   
-
-
-
-  
-
 </script>
- 
-
- 
-
-     
- 
 
 </body>
 </html>

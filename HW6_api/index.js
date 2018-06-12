@@ -3,11 +3,13 @@
 const express = require("express");
 const app = express();
 var Film = require('./models/films');
+let bodyParser = require("body-parser");
 
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public')); // set location for static files
 app.use(require("body-parser").urlencoded({extended: true})); // parse form submissions
+app.use(bodyParser.json());
 
 
 let handlebars =  require("express-handlebars");
@@ -87,12 +89,12 @@ app.post('/get', (req,res) => {
 
 // delete item
 // test url https://2563718b9050453e88f8755bff79bc10.vfs.cloud9.us-east-2.amazonaws.com/api/delete/amelia
-app.get('/api/delete/:title', (req,res,next) => { 
-Film.remove({title:req.params.title.toLowerCase()}, (err, title) => {
-     //console.log(err);
-    //console.log(film);
+app.get('/api/delete/:id', (req,res,next) => { 
+Film.remove({"_id":req.params.id}, (err, result) => {
+     console.log(err);
+    console.log(result);
    if (err) return next(err);
-   res.json(title);
+   res.json({"deleted": result.result.n});
  
 });
 });
@@ -100,17 +102,25 @@ Film.remove({title:req.params.title.toLowerCase()}, (err, title) => {
 // add an item to database
 // test url https://2563718b9050453e88f8755bff79bc10.vfs.cloud9.us-east-2.amazonaws.com/api/film/add/movie2/dude/2018
 
-app.get('/api/film/add/:title/:director/:releaseDate', (req, res) => {
-    let obj={ title:req.params.title, director:req.params.director,releaseDate:req.params.releaseDate};
-   // console.log(req.params.title);
-    Film.update(obj,(err,film)=>{
-     if(err) return(err);
+app.post('/api/film/add/', (req, res,next) => {
+  //find and update existing item. If none exists add new item
+ if(!req.body._id) {//inserts new document
+    let film = new Film({ title:req.body.title, director:req.body.director,releaseDate:req.body.releaseDate});
+    console.log();
+    film.save((err,newFilm) =>{
+     if(err) return next(err);
      
-     res.json(film);
+     res.json({updated:0, id:newFilm._id});
     });
+ }else{
+  Film.updateOne({ _id: req.body._id}, {title:req.body.title, director: req.body.director, releaseDate: req.body.releaseDate }, (err, result) => {
+  if (err) return next(err);
+            res.json({updated: result.nModified, _id: req.body._id});
+ 
 });
+ }    
     
-    
+    });
 
 
 // define 404 handler
