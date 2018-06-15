@@ -9,7 +9,7 @@ describe("films module", () => {
    expect(result).to.deep.equal({title: "Iris", director:"Albert Maysles", releaseDate:2014});
  });
  
- it("fails w/ invalid book", () => {
+ it("fails w/ invalid film title", () => {
    var result = film.get("fake");
    expect(result).to.be.undefined;
  });
